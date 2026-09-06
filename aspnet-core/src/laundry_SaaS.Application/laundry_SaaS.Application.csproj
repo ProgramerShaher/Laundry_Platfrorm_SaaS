@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\..\common.props" />
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <RootNamespace>laundry_SaaS</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\laundry_SaaS.Domain\laundry_SaaS.Domain.csproj" />
+    <ProjectReference Include="..\laundry_SaaS.Application.Contracts\laundry_SaaS.Application.Contracts.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Volo.Abp.Account.Application" Version="10.6.0" />
+    <PackageReference Include="Volo.Abp.Identity.Application" Version="10.6.0" />
+    <PackageReference Include="Volo.Abp.PermissionManagement.Application" Version="10.6.0" />
+    <PackageReference Include="Volo.Abp.TenantManagement.Application" Version="10.6.0" />
+    <PackageReference Include="Volo.Abp.FeatureManagement.Application" Version="10.6.0" />
+    <PackageReference Include="Volo.Abp.SettingManagement.Application" Version="10.6.0" />
+  </ItemGroup>
+
+</Project>

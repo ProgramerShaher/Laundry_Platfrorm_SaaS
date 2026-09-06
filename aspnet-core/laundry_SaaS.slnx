@@ -1,0 +1,35 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/laundry_SaaS.Application.Contracts/laundry_SaaS.Application.Contracts.csproj" />
+    <Project Path="src/laundry_SaaS.Application/laundry_SaaS.Application.csproj" />
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <Project Path="src/laundry_SaaS.DbMigrator/laundry_SaaS.DbMigrator.csproj" />
+    <Project Path="src/laundry_SaaS.Domain.Shared/laundry_SaaS.Domain.Shared.csproj" />
+    <Project Path="src/laundry_SaaS.Domain/laundry_SaaS.Domain.csproj" />
+    <Project Path="src/laundry_SaaS.EntityFrameworkCore/laundry_SaaS.EntityFrameworkCore.csproj" />
+    <Project Path="src/laundry_SaaS.HttpApi.Client/laundry_SaaS.HttpApi.Client.csproj" />
+    
+    <Project Path="src/laundry_SaaS.HttpApi.Host/laundry_SaaS.HttpApi.Host.csproj" />
+    <Project Path="src/laundry_SaaS.HttpApi/laundry_SaaS.HttpApi.csproj" />
+    
+    
+    
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="test/laundry_SaaS.Application.Tests/laundry_SaaS.Application.Tests.csproj" />
+    <Project Path="test/laundry_SaaS.Domain.Tests/laundry_SaaS.Domain.Tests.csproj" />
+    <Project Path="test/laundry_SaaS.EntityFrameworkCore.Tests/laundry_SaaS.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="test/laundry_SaaS.HttpApi.Client.ConsoleTestApp/laundry_SaaS.HttpApi.Client.ConsoleTestApp.csproj" />
+    
+    <Project Path="test/laundry_SaaS.TestBase/laundry_SaaS.TestBase.csproj" />
+    
+  </Folder>
+</Solution>
