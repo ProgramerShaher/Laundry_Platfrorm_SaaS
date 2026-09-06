@@ -93,6 +93,11 @@ public class laundry_SaaSHttpApiHostModule : AbpModule
                 }
             );
         });
+
+        Configure<Volo.Abp.AspNetCore.Mvc.Libs.AbpMvcLibsOptions>(options =>
+        {
+            options.CheckLibs = false;
+        });
     }
 
     private void ConfigureUrls(IConfiguration configuration)

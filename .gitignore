@@ -1,0 +1,21 @@
+# Build & Artifacts
+bin/
+obj/
+Logs/
+**/Logs/
+[Bb]in/
+[Oo]bj/
+
+# Visual Studio & IDEs
+.vs/
+.idea/
+*.user
+*.suo
+
+# Node
+node_modules/
+**/node_modules/
+
+# Dotnet CLI
+.dotnet/
+.dotnet_home/

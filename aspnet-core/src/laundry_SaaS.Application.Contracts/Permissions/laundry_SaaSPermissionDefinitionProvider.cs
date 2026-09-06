@@ -1,4 +1,4 @@
-﻿using laundry_SaaS.Localization;
+using laundry_SaaS.Localization;
 using Volo.Abp.Authorization.Permissions;
 using Volo.Abp.Localization;
 
@@ -8,9 +8,10 @@ public class laundry_SaaSPermissionDefinitionProvider : PermissionDefinitionProv
 {
     public override void Define(IPermissionDefinitionContext context)
     {
-        var myGroup = context.AddGroup(laundry_SaaSPermissions.GroupName);
-        //Define your own permissions here. Example:
-        //myGroup.AddPermission(laundry_SaaSPermissions.MyPermission1, L("Permission:MyPermission1"));
+        var myGroup = context.AddGroup(laundry_SaaSPermissions.GroupName, L("Permission:laundry_SaaS"));
+        
+        // Base permission group initialized.
+        // Each module owner will register module-specific permissions under this group when starting their module.
     }
 
     private static LocalizableString L(string name)
@@ -18,3 +19,4 @@ public class laundry_SaaSPermissionDefinitionProvider : PermissionDefinitionProv
         return LocalizableString.Create<laundry_SaaSResource>(name);
     }
 }
+
