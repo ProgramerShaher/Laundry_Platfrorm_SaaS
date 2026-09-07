@@ -1,5 +1,10 @@
 namespace laundry_SaaS;
 
+/// <summary>
+/// ثوابت أكواد أخطاء الأعمال (Domain Error Codes) المعتمدة في النظام.
+/// تتبع صيغة المعيار: laundry_SaaS:ModuleName:CodeNumber
+/// وتُستخدم عند رمي استثناءات الأعمال من نوع BusinessException لتقديم رسائل خطأ مترجمة وموحدة للواجهات الأمامية.
+/// </summary>
 public static class laundry_SaaSDomainErrorCodes
 {
     /*
@@ -16,6 +21,9 @@ public static class laundry_SaaSDomainErrorCodes
      * Each module owner will declare their specific error codes within their module scope.
      */
 
+    /// <summary>
+    /// البادئة الموحدة لجميع أكواد أخطاء النظام، تفيد في تمييز أخطاء نطاق العمل عن أخطاء البنية التحتية.
+    /// </summary>
     public const string Prefix = "laundry_SaaS";
 }
 

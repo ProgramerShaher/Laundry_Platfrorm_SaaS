@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volo.Abp.EntityFrameworkCore;
 using laundry_SaaS.EntityFrameworkCore;
@@ -12,9 +13,11 @@ using laundry_SaaS.EntityFrameworkCore;
 namespace laundry_SaaS.Migrations
 {
     [DbContext(typeof(laundry_SaaSDbContext))]
-    partial class laundry_SaaSDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260906234421_HardenCoreBusinessRules")]
+    partial class HardenCoreBusinessRules
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2867,9 +2870,6 @@ namespace laundry_SaaS.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("CreatorId");
 
-                    b.Property<int>("DayOfWeek")
-                        .HasColumnType("int");
-
                     b.Property<TimeOnly>("EndTime")
                         .HasColumnType("time");
 
@@ -2895,8 +2895,7 @@ namespace laundry_SaaS.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("LaundryId", "DayOfWeek", "SlotType", "StartTime", "EndTime")
-                        .IsUnique();
+                    b.HasIndex("LaundryId", "SlotType");
 
                     b.ToTable("AppLaundryTimeSlots", (string)null);
                 });

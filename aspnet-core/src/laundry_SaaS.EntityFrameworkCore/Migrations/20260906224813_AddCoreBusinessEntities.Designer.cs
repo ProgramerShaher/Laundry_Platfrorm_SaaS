@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volo.Abp.EntityFrameworkCore;
 using laundry_SaaS.EntityFrameworkCore;
@@ -12,9 +13,11 @@ using laundry_SaaS.EntityFrameworkCore;
 namespace laundry_SaaS.Migrations
 {
     [DbContext(typeof(laundry_SaaSDbContext))]
-    partial class laundry_SaaSDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260906224813_AddCoreBusinessEntities")]
+    partial class AddCoreBusinessEntities
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2091,7 +2094,7 @@ namespace laundry_SaaS.Migrations
 
                     b.HasIndex("TenantId", "Code")
                         .IsUnique()
-                        .HasFilter("[IsDeleted] = 0");
+                        .HasFilter("[TenantId] IS NOT NULL");
 
                     b.ToTable("AppLaundryItemTypes", (string)null);
                 });
@@ -2168,7 +2171,7 @@ namespace laundry_SaaS.Migrations
 
                     b.HasIndex("TenantId", "Code")
                         .IsUnique()
-                        .HasFilter("[IsDeleted] = 0");
+                        .HasFilter("[TenantId] IS NOT NULL");
 
                     b.ToTable("AppLaundryServices", (string)null);
                 });
@@ -2241,7 +2244,7 @@ namespace laundry_SaaS.Migrations
 
                     b.HasIndex("TenantId", "LaundryItemTypeId", "LaundryServiceId")
                         .IsUnique()
-                        .HasFilter("[IsDeleted] = 0");
+                        .HasFilter("[TenantId] IS NOT NULL");
 
                     b.ToTable("AppServicePrices", (string)null);
                 });
@@ -2502,10 +2505,6 @@ namespace laundry_SaaS.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
-
-                    b.HasIndex(new[] { "CustomerId" }, "IX_CustomerAddresses_CustomerId_Default")
-                        .IsUnique()
-                        .HasFilter("[IsDefault] = 1 AND [IsDeleted] = 0");
 
                     b.ToTable("AppCustomerAddresses", (string)null);
                 });
@@ -2779,7 +2778,7 @@ namespace laundry_SaaS.Migrations
 
                     b.HasIndex("TenantId")
                         .IsUnique()
-                        .HasFilter("[IsDeleted] = 0");
+                        .HasFilter("[TenantId] IS NOT NULL");
 
                     b.ToTable("AppLaundries", (string)null);
                 });
@@ -2849,7 +2848,7 @@ namespace laundry_SaaS.Migrations
 
                     b.HasIndex("TenantId", "UserId")
                         .IsUnique()
-                        .HasFilter("[IsDeleted] = 0");
+                        .HasFilter("[TenantId] IS NOT NULL");
 
                     b.ToTable("AppLaundryStaffProfiles", (string)null);
                 });
@@ -2866,9 +2865,6 @@ namespace laundry_SaaS.Migrations
                     b.Property<Guid?>("CreatorId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("CreatorId");
-
-                    b.Property<int>("DayOfWeek")
-                        .HasColumnType("int");
 
                     b.Property<TimeOnly>("EndTime")
                         .HasColumnType("time");
@@ -2895,8 +2891,7 @@ namespace laundry_SaaS.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("LaundryId", "DayOfWeek", "SlotType", "StartTime", "EndTime")
-                        .IsUnique();
+                    b.HasIndex("LaundryId", "SlotType");
 
                     b.ToTable("AppLaundryTimeSlots", (string)null);
                 });
@@ -3449,7 +3444,7 @@ namespace laundry_SaaS.Migrations
 
                     b.HasIndex("TenantId", "UserId")
                         .IsUnique()
-                        .HasFilter("[IsDeleted] = 0");
+                        .HasFilter("[TenantId] IS NOT NULL");
 
                     b.ToTable("AppDrivers", (string)null);
                 });
@@ -3535,7 +3530,7 @@ namespace laundry_SaaS.Migrations
 
                     b.HasIndex("TenantId", "OrderId")
                         .IsUnique()
-                        .HasFilter("[Status] IN (0, 1, 2, 3, 4)");
+                        .HasFilter("[Status] IN (0, 1, 2, 3)");
 
                     b.HasIndex("TenantId", "DriverId", "Status");
 
