@@ -107,36 +107,37 @@ MUSHTAQ
 
 Primary responsibility:
 
-CUSTOMER + ORDERS + INSPECTIONS + COMPLAINTS + NOTIFICATIONS
+CUSTOMER + ORDERS + INSPECTIONS + COMPLAINTS
 
 المجالات التي يملكها مشتاق:
 
-1. Customer Profile
-2. Customer-facing Catalog
-3. Customer Orders
-4. Laundry-side Order Processing
-5. Inspection
-6. Order Adjustment orchestration
-7. Complaints
-8. App Notifications
+1. Customer Profile (COMPLETE)
+2. Customer-facing Catalog (COMPLETE)
+3. Customer Orders (NOT IMPLEMENTED)
+4. Laundry-side Order Processing (NOT IMPLEMENTED)
+5. Inspection (NOT IMPLEMENTED)
+6. Order Adjustment orchestration (NOT IMPLEMENTED)
+7. Complaints (NOT IMPLEMENTED)
+
+ملاحظة هامة:
+مشتاق لم يعد مسؤولاً عن إشعارات التطبيق (IAppNotificationAppService)، حيث تم نقل ملكيتها رسمياً إلى شاهر لإعادة موازنة عبء العمل.
 
 ---
 
 # 5. MUSHTAQ — APPROVED APPLICATION SERVICES
 
-مشتاق مسؤول عن تنفيذ هذه الواجهات:
+مشتاق مسؤول حصرياً عن تنفيذ هذه الواجهات (إجمالي 6 خدمات: 2 مكتملة، 4 متبقية):
 
-1. ICustomerProfileAppService
-2. ICustomerCatalogAppService
-3. ICustomerOrderAppService
-4. ILaundryOrderAppService
-5. IInspectionAppService
-6. IComplaintAppService
-7. IAppNotificationAppService
+1. ICustomerProfileAppService [COMPLETE]
+2. ICustomerCatalogAppService [COMPLETE]
+3. ICustomerOrderAppService [NOT IMPLEMENTED]
+4. ILaundryOrderAppService [NOT IMPLEMENTED]
+5. IInspectionAppService [NOT IMPLEMENTED]
+6. IComplaintAppService [NOT IMPLEMENTED]
 
 عدد الواجهات التابعة لمشتاق:
 
-7 Application Services
+6 Application Services (2 COMPLETE, 4 REMAINING)
 
 ---
 
@@ -144,7 +145,7 @@ CUSTOMER + ORDERS + INSPECTIONS + COMPLAINTS + NOTIFICATIONS
 
 يتم التنفيذ بهذا الترتيب قدر الإمكان:
 
-## Phase M1 — CustomerProfileAppService
+## Phase M1 — CustomerProfileAppService [COMPLETE]
 
 يشمل:
 
@@ -167,7 +168,7 @@ Authentication
 
 ---
 
-## Phase M2 — CustomerCatalogAppService
+## Phase M2 — CustomerCatalogAppService [COMPLETE]
 
 يشمل:
 
@@ -185,7 +186,7 @@ Rules:
 
 ---
 
-## Phase M3 — CustomerOrderAppService
+## Phase M3 — CustomerOrderAppService [NOT IMPLEMENTED — NEXT PRIORITY]
 
 يشمل:
 
@@ -223,7 +224,7 @@ Authenticated Customer
 
 ---
 
-## Phase M4 — LaundryOrderAppService
+## Phase M4 — LaundryOrderAppService [NOT IMPLEMENTED]
 
 يشمل:
 
@@ -258,7 +259,7 @@ OrderAdjustmentDomainService
 
 ---
 
-## Phase M5 — InspectionAppService
+## Phase M5 — InspectionAppService [NOT IMPLEMENTED]
 
 يشمل:
 
@@ -283,7 +284,7 @@ every original OrderItem represented.
 
 ---
 
-## Phase M6 — ComplaintAppService
+## Phase M6 — ComplaintAppService [NOT IMPLEMENTED]
 
 يشمل:
 
@@ -320,42 +321,26 @@ No Base64/Binary inside contract.
 
 ---
 
-## Phase M7 — AppNotificationAppService
-
-يشمل:
-
-- GetMyNotifications
-- GetUnreadCount
-- MarkAsRead
-- MarkAllAsRead
-
-Ownership:
-
-TargetUserId == CurrentUser.Id
-
-Never expose another user's notification.
-
-Notifications are not business state authority.
-
----
-
 # 7. MUSHTAQ — PRIMARY FOLDERS
 
 مشتاق يستطيع إنشاء/تعديل Application implementation files التي تخص نطاقه داخل:
 
 src/laundry_SaaS.Application/Customers/
+src/laundry_SaaS.Application/Catalog/
 src/laundry_SaaS.Application/Orders/
 src/laundry_SaaS.Application/Inspections/
 src/laundry_SaaS.Application/Complaints/
-src/laundry_SaaS.Application/Notifications/
 
 ويمكنه إنشاء Tests الخاصة بنطاقه داخل:
 
 test/laundry_SaaS.Application.Tests/Customers/
+test/laundry_SaaS.Application.Tests/Catalog/
 test/laundry_SaaS.Application.Tests/Orders/
 test/laundry_SaaS.Application.Tests/Inspections/
 test/laundry_SaaS.Application.Tests/Complaints/
-test/laundry_SaaS.Application.Tests/Notifications/
+test/laundry_SaaS.EntityFrameworkCore.Tests/EntityFrameworkCore/Applications/
+
+ملاحظة: ملفات Notifications انتقلت رسمياً إلى نطاق شاهر.
 
 يمكنه READ من بقية Domain/Contracts/EF files.
 
@@ -371,7 +356,7 @@ SHAHER
 
 Primary responsibility:
 
-HOST + LAUNDRY + STAFF + CATALOG + DRIVERS + LOGISTICS + BAGS
+HOST + LAUNDRY + STAFF + CATALOG + DRIVERS + LOGISTICS + BAGS + NOTIFICATIONS
 
 المجالات التي يملكها شاهر:
 
@@ -386,91 +371,35 @@ HOST + LAUNDRY + STAFF + CATALOG + DRIVERS + LOGISTICS + BAGS
 9. Delivery Tasks
 10. OTP/COD orchestration
 11. Bags / Chain of Custody
+12. App Notifications (تم نقل ملكيتها إلى شاهر)
 
 ---
 
 # 9. SHAHER — APPROVED APPLICATION SERVICES
 
-شاهر مسؤول عن تنفيذ هذه الواجهات:
+شاهر مسؤول حصرياً عن تنفيذ هذه الواجهات (إجمالي 9 خدمات — جميعها حالياً NOT IMPLEMENTED في طبقة التطبيق):
 
-1. ILaundryHostAppService
-2. ILaundryProfileAppService
-3. ILaundryTimeSlotAppService
-4. ILaundryStaffAppService
-5. ILaundryCatalogAppService
-6. IDriverManagementAppService
-7. IDriverTaskAppService
-8. IBagAppService
+1. ILaundryCatalogAppService [NOT IMPLEMENTED]
+2. ILaundryProfileAppService [NOT IMPLEMENTED]
+3. ILaundryTimeSlotAppService [NOT IMPLEMENTED]
+4. ILaundryStaffAppService [NOT IMPLEMENTED]
+5. ILaundryHostAppService [NOT IMPLEMENTED]
+6. IAppNotificationAppService [NOT IMPLEMENTED]
+7. IDriverManagementAppService [NOT IMPLEMENTED]
+8. IDriverTaskAppService [NOT IMPLEMENTED]
+9. IBagAppService [NOT IMPLEMENTED]
 
 عدد الواجهات التابعة لشاهر:
 
-8 Application Services
+9 Application Services (0 COMPLETE, 9 REMAINING)
 
 ---
 
 # 10. SHAHER — IMPLEMENTATION ORDER
 
-## Phase S1 — LaundryProfileAppService
+يتم التنفيذ بهذا الترتيب المعتمد رسمياً بعد إعادة الموازنة:
 
-يشمل:
-
-- Get laundry profile
-- Update laundry profile
-- Set CoverageArea
-- Working Hours
-- Set working hour
-
-Security:
-
-Authentication
-→ Laundry Staff
-→ Permission
-→ Current Tenant
-
-لا يقبل TenantId من Client.
-
----
-
-## Phase S2 — LaundryTimeSlotAppService
-
-يشمل:
-
-- List time slots
-- Available slots
-- Create
-- Update
-- Activate/Deactivate
-
-Rules:
-
-- Time slot belongs to Laundry aggregate.
-- No independent TenantId ownership on child entity.
-- Validate WorkingHour constraints.
-- Do not hard-delete operational template unless approved lifecycle permits it.
-
----
-
-## Phase S3 — LaundryStaffAppService
-
-يشمل:
-
-- List staff
-- Get staff
-- Create/link staff profile
-- Update
-- Activate/Deactivate
-
-Use:
-
-ABP Identity
-
-Do not create custom authentication.
-
-Preserve audit/history.
-
----
-
-## Phase S4 — LaundryCatalogAppService
+## Phase S1 — LaundryCatalogAppService [NOT IMPLEMENTED — NEXT PRIORITY FOR SHAHER]
 
 يشمل:
 
@@ -496,18 +425,123 @@ ServicePrice:
 - Set
 - Activate/Deactivate
 - Soft delete if approved
+- Lookup
 
 Rules:
 
 - Tenant-scoped
 - No cross-tenant pricing
-- Decimal money
+- Decimal money (SAR)
 - Unique service-price combination
 - Historical OrderItem snapshots unaffected by catalog changes
 
 ---
 
-## Phase S5 — DriverManagementAppService
+## Phase S2 — LaundryProfileAppService [NOT IMPLEMENTED]
+
+يشمل:
+
+- Get laundry profile
+- Update laundry profile
+- Set CoverageArea
+- Working Hours
+- Set working hour
+- Get working hours
+
+Security:
+
+Authentication
+→ Laundry Staff
+→ Permission
+→ Current Tenant
+
+لا يقبل TenantId من Client.
+
+---
+
+## Phase S3 — LaundryTimeSlotAppService [NOT IMPLEMENTED]
+
+يشمل:
+
+- List time slots
+- Get time slot
+- Create
+- Update
+- Activate/Deactivate
+
+Rules:
+
+- Time slot belongs to Laundry aggregate.
+- No independent TenantId ownership on child entity.
+- Validate WorkingHour constraints.
+- Do not hard-delete operational template unless approved lifecycle permits it.
+
+---
+
+## Phase S4 — LaundryStaffAppService [NOT IMPLEMENTED]
+
+يشمل:
+
+- List staff
+- Get staff
+- Create/link staff profile
+- Update
+- Activate/Deactivate
+
+Use:
+
+ABP Identity (IdentityUserManager)
+
+Do not create custom authentication.
+
+Preserve audit/history.
+
+---
+
+## Phase S5 — LaundryHostAppService [NOT IMPLEMENTED]
+
+يشمل:
+
+- Create Laundry Tenant
+- Activate Tenant/Laundry
+- Suspend Tenant/Laundry
+- Get Tenant/Laundry
+- List
+- Platform Statistics
+
+Host operation must coordinate:
+
+ABP Tenant
++
+Laundry aggregate
+
+قاعدة هامة:
+وحدة Host Management (شاهر) تملك حصرياً مزامنة حالة إيقاف/تفعيل المستأجر (ABP Tenant suspension/activation) مع إيقاف/تفعيل المغسلة تشغيلياً (`Laundry.IsActive = false / true`).
+
+Host only — No tenant staff access.
+
+---
+
+## Phase S6 — AppNotificationAppService [NOT IMPLEMENTED]
+
+يشمل:
+
+- GetMyNotifications (paged & filtered by unreadOnly)
+- GetUnreadCount
+- MarkAsRead
+- MarkAllAsRead
+
+Rules:
+
+- مملوكة بالكامل لشاهر.
+- الملكية وعزل البيانات: `TargetUserId == CurrentUser.Id`.
+- يُحظر كشف إشعارات مستخدم لآخر.
+- قاعدة هامة: حالة جدول الإشعارات في قاعدة البيانات ليست مصدر الحقيقة لحالة الطلبات أو العمليات اللوجستية (Notification DB state is NOT the source of truth for Order or Logistics state).
+- بإمكان الوحدات الأخرى إنشاء إشعارات عبر آليات التطبيق/النطاق المعتمدة.
+
+---
+
+## Phase S7 — DriverManagementAppService [NOT IMPLEMENTED]
 
 يشمل:
 
@@ -533,7 +567,7 @@ Driver does not assign drivers.
 
 ---
 
-## Phase S6 — DriverTaskAppService
+## Phase S8 — DriverTaskAppService [NOT IMPLEMENTED]
 
 ### Pickup workflow
 
@@ -543,6 +577,7 @@ Assigned
 → Arrived
 → PickedUp
 → Completed
+(or Fail)
 
 Methods:
 
@@ -555,13 +590,7 @@ Methods:
 - CompletePickup
 - FailPickupTask
 
-Driver ownership:
-
-Task.DriverId == CurrentDriver.Id
-
----
-
-### Delivery workflow
+### Delivery workflow & OTP / COD orchestration
 
 Assigned
 → Accepted
@@ -569,6 +598,7 @@ Assigned
 → OutForDelivery
 → Arrived
 → Delivered
+(or Fail)
 
 Methods:
 
@@ -591,45 +621,15 @@ Authentication
 → Current Tenant
 → Task.DriverId ownership
 
----
-
-## Phase S7 — OTP + COD Application Orchestration
-
-OTP rules are already locked in Domain.
-
-Application is responsible for:
-
-- generating secure 6-digit OTP
-- hashing OTP
-- sending through approved abstraction/provider
-- comparing entered OTP securely
-- calling Domain verification methods
-
-Domain must not receive plaintext persistence.
-
-Final delivery requires:
-
-Verified OTP
-+
-Exact COD
-
-ConfirmDelivery must coordinate:
-
-task.ConfirmDelivery(...)
-order.MarkAsDelivered()
-order.Complete()
-
-in one Unit of Work.
-
-If SMS provider is not implemented:
-
-STOP and report infrastructure dependency.
-
-Do not add NuGet package without approval.
+OTP / COD Orchestration:
+- Application generates secure 6-digit OTP and compares entered OTP.
+- Domain receives hashed verification.
+- Final delivery requires: Verified OTP + Exact COD matching.
+- ConfirmDelivery coordinates `task.ConfirmDelivery(...)`, `order.MarkAsDelivered()`, `order.Complete()`.
 
 ---
 
-## Phase S8 — BagAppService
+## Phase S9 — BagAppService [NOT IMPLEMENTED]
 
 يشمل:
 
@@ -652,29 +652,6 @@ Backend derives custody event from workflow context.
 
 ---
 
-## Phase S9 — LaundryHostAppService
-
-يشمل:
-
-- Create Laundry Tenant
-- Activate Tenant/Laundry
-- Suspend Tenant/Laundry
-- Get Tenant/Laundry
-- List
-- Platform Statistics
-
-Host operation must coordinate:
-
-ABP Tenant
-+
-Laundry aggregate
-
-Host only.
-
-No tenant staff access.
-
----
-
 # 11. SHAHER — PRIMARY FOLDERS
 
 شاهر يستطيع إنشاء/تعديل Application implementation files التي تخص نطاقه داخل:
@@ -685,6 +662,7 @@ src/laundry_SaaS.Application/Catalog/
 src/laundry_SaaS.Application/Drivers/
 src/laundry_SaaS.Application/PickupDelivery/
 src/laundry_SaaS.Application/Bags/
+src/laundry_SaaS.Application/Notifications/
 
 ويمكنه إنشاء Tests داخل:
 
@@ -694,6 +672,8 @@ test/laundry_SaaS.Application.Tests/Catalog/
 test/laundry_SaaS.Application.Tests/Drivers/
 test/laundry_SaaS.Application.Tests/PickupDelivery/
 test/laundry_SaaS.Application.Tests/Bags/
+test/laundry_SaaS.Application.Tests/Notifications/
+test/laundry_SaaS.EntityFrameworkCore.Tests/EntityFrameworkCore/Applications/
 
 يمكنه READ من بقية Domain/Contracts/EF files.
 
@@ -719,7 +699,7 @@ test/laundry_SaaS.Application.Tests/Bags/
 | Inspection | OWNER | READ |
 | Order Adjustment | OWNER | READ |
 | Complaints | OWNER | READ/LAUNDRY ACTOR |
-| Notifications | OWNER | CONSUMER |
+| Notifications | CONSUMER | OWNER |
 | Driver Management | READ | OWNER |
 | Pickup Tasks | INTEGRATION | OWNER |
 | Delivery Tasks | INTEGRATION | OWNER |
@@ -780,8 +760,7 @@ OTP + COD
 [SHAHER]
 Delivered + Completed
    ↓
-[MUSHTAQ]
-Customer history / complaint / notifications access
+[MUSHTAQ] Customer history / complaint access  |  [SHAHER] Notifications delivery
 
 ---
 
@@ -948,7 +927,6 @@ If these are not clear, do not finish implementation.
 - Customer cannot approve/reject another customer's adjustment
 - Inspection expected fields not trusted from client
 - Complaint ownership
-- Notification TargetUser ownership
 
 ---
 
@@ -969,6 +947,7 @@ If these are not clear, do not finish implementation.
 - Bag scan authorization
 - QR does not bypass permission
 - Host operation cannot run in Tenant context
+- Notification TargetUser ownership and unread count isolation
 
 ---
 
@@ -1031,7 +1010,7 @@ Preferred focused commits:
 
 feat(customer): implement customer profile application service
 
-feat(catalog): implement customer catalog queries
+feat(catalog): implement customer catalog application service
 
 feat(orders): implement customer order application service
 
@@ -1041,9 +1020,7 @@ feat(inspections): implement inspection application service
 
 feat(complaints): implement complaint application service
 
-feat(notifications): implement user notification application service
-
-Do not wait until all seven services are done to make one giant commit.
+Do not wait until all remaining services are done to make one giant commit.
 
 ---
 
@@ -1051,21 +1028,23 @@ Do not wait until all seven services are done to make one giant commit.
 
 Preferred focused commits:
 
+feat(catalog): implement laundry catalog application service
+
 feat(laundry): implement laundry profile application service
 
 feat(laundry): implement time slot application service
 
 feat(staff): implement laundry staff application service
 
-feat(catalog): implement laundry catalog application service
+feat(host): implement host management service
+
+feat(notifications): implement user notification application service
 
 feat(drivers): implement driver management service
 
 feat(logistics): implement driver task workflows
 
 feat(bags): implement bag application service
-
-feat(host): implement host management service
 
 ---
 
@@ -1399,15 +1378,14 @@ A service is complete when:
 
 # 42. DEFINITION OF DONE — MUSHTAQ TRACK
 
-Mushtaq track is complete when these 7 implementations are finished:
+Mushtaq track is complete when these 6 implementations are finished:
 
-[ ] CustomerProfileAppService
-[ ] CustomerCatalogAppService
-[ ] CustomerOrderAppService
-[ ] LaundryOrderAppService
-[ ] InspectionAppService
-[ ] ComplaintAppService
-[ ] AppNotificationAppService
+[x] CustomerProfileAppService [COMPLETE]
+[x] CustomerCatalogAppService [COMPLETE]
+[ ] CustomerOrderAppService [NOT IMPLEMENTED]
+[ ] LaundryOrderAppService [NOT IMPLEMENTED]
+[ ] InspectionAppService [NOT IMPLEMENTED]
+[ ] ComplaintAppService [NOT IMPLEMENTED]
 
 And all Mushtaq security/ownership tests pass.
 
@@ -1415,16 +1393,17 @@ And all Mushtaq security/ownership tests pass.
 
 # 43. DEFINITION OF DONE — SHAHER TRACK
 
-Shaher track is complete when these 8 implementations are finished:
+Shaher track is complete when these 9 implementations are finished:
 
-[ ] LaundryHostAppService
-[ ] LaundryProfileAppService
-[ ] LaundryTimeSlotAppService
-[ ] LaundryStaffAppService
-[ ] LaundryCatalogAppService
-[ ] DriverManagementAppService
-[ ] DriverTaskAppService
-[ ] BagAppService
+[ ] LaundryCatalogAppService [NOT IMPLEMENTED]
+[ ] LaundryProfileAppService [NOT IMPLEMENTED]
+[ ] LaundryTimeSlotAppService [NOT IMPLEMENTED]
+[ ] LaundryStaffAppService [NOT IMPLEMENTED]
+[ ] LaundryHostAppService [NOT IMPLEMENTED]
+[ ] AppNotificationAppService [NOT IMPLEMENTED]
+[ ] DriverManagementAppService [NOT IMPLEMENTED]
+[ ] DriverTaskAppService [NOT IMPLEMENTED]
+[ ] BagAppService [NOT IMPLEMENTED]
 
 And all Shaher tenant/driver/logistics security tests pass.
 
@@ -1466,8 +1445,6 @@ ORDERS
 INSPECTION
 +
 COMPLAINTS
-+
-NOTIFICATIONS
 
 SHAHER owns:
 
@@ -1484,6 +1461,8 @@ DRIVERS
 PICKUP/DELIVERY
 +
 BAGS
++
+NOTIFICATIONS
 
 Neither developer competes for ownership.
 
@@ -1508,14 +1487,15 @@ Do not bypass boundaries for speed.
                |                             |
           MUSHTAQ TRACK                 SHAHER TRACK
                |                             |
-     Customer Profile                 Host Management
+     Customer Profile                 Laundry Catalog
      Customer Catalog                 Laundry Profile
      Customer Orders                  Time Slots
      Laundry Orders                   Staff
-     Inspection                       Catalog
-     Adjustments                      Driver Management
-     Complaints                       Pickup Tasks
-     Notifications                    Delivery Tasks
+     Inspection                       Host Management
+     Adjustments                      Notifications
+     Complaints                       Driver Management
+                                      Pickup Tasks
+                                      Delivery Tasks
                                       OTP / COD
                                       Bags
                |                             |
@@ -1562,6 +1542,133 @@ STOP AND REPORT IT.
 6. **Customer Boundary on Laundry.IsActive**: تثق خدمات العميل بالخاصية `Laundry.IsActive` (و `AcceptingOrders` للعمليات المرتبطة بالطلب) كمصدر مرجعي لإتاحة المغسلة دون الاعتماد على خدمات إدارة المستأجرين.
 7. **HostManagement Ownership**: وحدة Host Management (ضمن نطاق شاهر) هي المسؤولة عن مزامنة حالة إيقاف/تفعيل المستأجر (ABP Tenant suspension) مع حالة `Laundry.IsActive`.
 8. **MaxDistanceKm Limits Physical Distance**: قيد أقصى مسافة بحث للعميل `MaxDistanceKm` يُطبق حصرياً على المسافة المباشرة إلى الموقع الفعلي للمغسلة (`Laundry.Latitude`, `Laundry.Longitude`)، ومركز التغطية مخصص حصرياً للتحقق من أهلية التوصيل ولا يُستخدم في فلترة `MaxDistanceKm`.
+
+---
+
+# 49. REBALANCED TEAM WORKLOAD & PARALLEL EXECUTION WAVES
+
+بعد التدقيق الشامل للباك إند، تم اعتماد إعادة موازنة مسؤوليات الفريق رسمياً بحيث يتولى شاهر عبء عمل تطبيقي أكبر.
+
+## 1. APPROVED OWNERSHIP & WORKLOAD SUMMARY
+
+### MUSHTAQ (مشتاق):
+- إجمالي الخدمات المملوكة: **6 خدمات**
+- الخدمات المكتملة: **2** (`ICustomerProfileAppService`, `ICustomerCatalogAppService`)
+- الخدمات المتبقية: **4**
+- الخدمات المملوكة حصرياً:
+  1. `ICustomerProfileAppService` [COMPLETE]
+  2. `ICustomerCatalogAppService` [COMPLETE]
+  3. `ICustomerOrderAppService` [NOT IMPLEMENTED]
+  4. `ILaundryOrderAppService` [NOT IMPLEMENTED]
+  5. `IInspectionAppService` [NOT IMPLEMENTED]
+  6. `IComplaintAppService` [NOT IMPLEMENTED]
+
+### SHAHER (شاهر):
+- إجمالي الخدمات المملوكة: **9 خدمات**
+- الخدمات المكتملة: **0**
+- الخدمات المتبقية: **9** (جميعها غير مطبقة حالياً في طبقة التطبيق)
+- الخدمات المملوكة حصرياً:
+  1. `ILaundryCatalogAppService` [NOT IMPLEMENTED]
+  2. `ILaundryProfileAppService` [NOT IMPLEMENTED]
+  3. `ILaundryTimeSlotAppService` [NOT IMPLEMENTED]
+  4. `ILaundryStaffAppService` [NOT IMPLEMENTED]
+  5. `ILaundryHostAppService` [NOT IMPLEMENTED]
+  6. `IAppNotificationAppService` [NOT IMPLEMENTED]
+  7. `IDriverManagementAppService` [NOT IMPLEMENTED]
+  8. `IDriverTaskAppService` [NOT IMPLEMENTED]
+  9. `IBagAppService` [NOT IMPLEMENTED]
+
+---
+
+## 2. MUSHTAQ EXECUTION ORDER
+
+- **M3:** `ICustomerOrderAppService`
+- **M4:** `ILaundryOrderAppService`
+- **M5:** `IInspectionAppService`
+- **M6:** `IComplaintAppService`
+
+---
+
+## 3. SHAHER EXECUTION ORDER
+
+- **S1:** `ILaundryCatalogAppService`
+- **S2:** `ILaundryProfileAppService`
+- **S3:** `ILaundryTimeSlotAppService`
+- **S4:** `ILaundryStaffAppService`
+- **S5:** `ILaundryHostAppService`
+- **S6:** `IAppNotificationAppService`
+- **S7:** `IDriverManagementAppService`
+- **S8:** `IDriverTaskAppService`
+- **S9:** `IBagAppService`
+
+---
+
+## 4. PARALLEL EXECUTION WAVES
+
+### WAVE 1 (الموجة الأولى):
+- **MUSHTAQ:**
+  - `ICustomerOrderAppService`
+- **SHAHER:**
+  - `ILaundryCatalogAppService`
+  - `ILaundryProfileAppService`
+  - `ILaundryTimeSlotAppService`
+
+### WAVE 2 (الموجة الثانية):
+- **MUSHTAQ:**
+  - `ILaundryOrderAppService`
+  - `IInspectionAppService`
+- **SHAHER:**
+  - `ILaundryStaffAppService`
+  - `ILaundryHostAppService`
+  - `IAppNotificationAppService`
+
+### WAVE 3 (الموجة الثالثة):
+- **MUSHTAQ:**
+  - `IComplaintAppService`
+- **SHAHER:**
+  - `IDriverManagementAppService`
+  - `IDriverTaskAppService`
+  - `IBagAppService`
+
+---
+
+## 5. CROSS-OWNER HANDOFFS (نقاط التسليم والاعتماد)
+
+1. **CustomerOrder creation (إنشاء طلب العميل):**
+   بيانات شاهر (`Laundry` + `Catalog` + `TimeSlots`) ← تُستهلك كبيانات مرجعية في `CustomerOrder` (مشتاق).
+2. **Pickup completion (إكمال الاستلام):**
+   إكمال مهمة السائق `DriverTask` (شاهر) ← يطلق انتقال حالة دورة حياة الطلب `Order` إلى `PickedUp` ثم `ArrivedAtLaundry` (مشتاق).
+3. **Inspection (الفحص الفني):**
+   مملوكة بالكامل لمشتاق (`IInspectionAppService`) وتبدأ عند وصول الملابس وربطها بكيس الغسيل (`Bag`).
+4. **ReadyForDelivery (جاهزية التوصيل):**
+   اعتماد جاهزية الطلب `ReadyForDelivery` (مشتاق) ← يطلق إنشاء وإسناد مهمة التوصيل `DeliveryTask` للسائق (شاهر).
+5. **Tenant suspension (إيقاف المستأجر):**
+   وحدة `HostManagement` (شاهر) تملك حصرياً مزامنة:
+   إيقاف المستأجر بـ ABP (`ABP Tenant suspension`) + `Laundry.IsActive = false`.
+
+---
+
+## 6. NOTIFICATION OWNERSHIP & NON-SOURCE-OF-TRUTH RULE
+
+- واجهة `IAppNotificationAppService` مملوكة رسمياً وحصرياً لـ **شاهر**.
+- شاهر ينفذ دوال الخدمة:
+  - `GetMyNotificationsAsync`
+  - `GetUnreadCountAsync`
+  - `MarkAsReadAsync`
+  - `MarkAllAsReadAsync`
+- بإمكان الوحدات التشغيلية الأخرى (الطلبات، اللوجستيات، الفحص، الشكاوى) إنشاء وإرسال إشعارات عبر آليات التطبيق والنطاق المعتمدة لاحقاً.
+- **قاعدة معمارية صارمة:** حالة سجلات الإشعارات في قاعدة البيانات **ليست** مصدر الحقيقة لحالة الطلبات أو المهام اللوجستية (Notification DB state is NOT the source of truth for Order or Logistics state).
+
+---
+
+## 7. FOLDER STRUCTURE PRESERVATION
+
+- يُحظر نقل أو إعادة تسمية مجلدات العقود أو الـ DTOs أو التطبيق لمجرد تغير الملكية.
+- مجلدات الإشعارات تبقى ثابتة في مكانها المعتمد:
+  - `aspnet-core/src/laundry_SaaS.Application.Contracts/Notifications/`
+  - `aspnet-core/src/laundry_SaaS.Application/Notifications/`
+  - `aspnet-core/test/laundry_SaaS.Application.Tests/Notifications/`
+- التغيير محصور بملكية المطور المسؤول عن كتابة واختبار كود الخدمة فقط.
 
 
 
