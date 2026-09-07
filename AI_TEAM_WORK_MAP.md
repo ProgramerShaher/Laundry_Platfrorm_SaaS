@@ -1548,3 +1548,20 @@ If a shared architectural change is required:
 
 STOP AND REPORT IT.
 
+---
+
+# 48. CUSTOMER CATALOG / SHARED BUSINESS DECISIONS
+
+القرارات المعمارية المعتمدة لخدمات كتالوج واستكشاف المغاسل:
+
+1. **Laundry.MinimumOrderAmount is Authoritative**: قيمة الحد الأدنى للطلب المعتمدة لقرارات الأعمال والواجهة والتحقق من أهلية الطلب لمرحلة MVP هي `Laundry.MinimumOrderAmount`.
+2. **CoverageArea.MinimumOrderAmount is Legacy**: تُعامل `CoverageArea.MinimumOrderAmount` كبيانات مكررة موروثة، ويُحظر استخدامها في قرارات تسعير أو أهلية الطلب لحين تنظيف الموديل رسمياً في مرحلة لاحقة.
+3. **Physical Distance Semantics**: الخاصية `LaundryNearbyListDto.DistanceKm` تمثل حصرياً المسافة المباشرة من إحداثيات العميل إلى الموقع الفعلي للمغسلة (`Laundry.Latitude`, `Laundry.Longitude`).
+4. **Coverage Eligibility**: أهلية التغطية تحسب حصرياً بالمسافة من إحداثيات العميل إلى مركز نطاق التغطية (`CoverageArea.CenterLatitude`, `CoverageArea.CenterLongitude`) ومقارنتها بنصف القطر `DeliveryRadiusKm`.
+5. **No (0,0) Fallback**: الإحداثيات (0,0) إحداثيات جغرافية قانونية وليست رمزاً لغياب الموقع، ويُحظر أي Fallback إلى مركز نطاق التغطية.
+6. **Customer Boundary on Laundry.IsActive**: تثق خدمات العميل بالخاصية `Laundry.IsActive` (و `AcceptingOrders` للعمليات المرتبطة بالطلب) كمصدر مرجعي لإتاحة المغسلة دون الاعتماد على خدمات إدارة المستأجرين.
+7. **HostManagement Ownership**: وحدة Host Management (ضمن نطاق شاهر) هي المسؤولة عن مزامنة حالة إيقاف/تفعيل المستأجر (ABP Tenant suspension) مع حالة `Laundry.IsActive`.
+8. **MaxDistanceKm Limits Physical Distance**: قيد أقصى مسافة بحث للعميل `MaxDistanceKm` يُطبق حصرياً على المسافة المباشرة إلى الموقع الفعلي للمغسلة (`Laundry.Latitude`, `Laundry.Longitude`)، ومركز التغطية مخصص حصرياً للتحقق من أهلية التوصيل ولا يُستخدم في فلترة `MaxDistanceKm`.
+
+
+

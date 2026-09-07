@@ -3086,3 +3086,20 @@ If any architectural contradiction is found:
 STOP AND REPORT IT.
 
 Do not silently redesign the project.
+
+---
+
+# 185. CUSTOMER CATALOG / SHARED BUSINESS DECISIONS
+
+The following authoritative architectural decisions govern customer catalog, discovery, and ordering:
+
+1. **Authoritative Minimum Order Amount**: `Laundry.MinimumOrderAmount` is the single authoritative business value for MVP across nearby laundry listings, customer catalogs, and order eligibility.
+2. **Legacy CoverageArea Minimum**: `CoverageArea.MinimumOrderAmount` is legacy/duplicated model data and MUST NOT be used for pricing, display, or order eligibility until a future approved cleanup.
+3. **Display Distance Semantics**: `LaundryNearbyListDto.DistanceKm` strictly represents the distance from the customer's coordinates to the physical laundry location (`Laundry.Latitude`, `Laundry.Longitude`).
+4. **Coverage Eligibility Semantics**: Coverage area eligibility strictly uses the distance from customer coordinates to the coverage area center (`CoverageArea.CenterLatitude`, `CoverageArea.CenterLongitude`) against `CoverageArea.DeliveryRadiusKm`.
+5. **No Zero-Coordinate Convention**: Coordinates (0,0) have no special "missing location" meaning. No fallback to coverage center coordinates is permitted.
+6. **Customer Application Tenant Visibility**: Customer Application services trust `Laundry.IsActive` (and `Laundry.AcceptingOrders` for order-related workflows) as the customer-visible availability source without depending on Host/Tenant management services.
+7. **Host Management Suspension Ownership**: Host Management (`ILaundryHostAppService` / Shaher scope) owns the synchronization between ABP Tenant suspension/activation and `Laundry.IsActive`.
+8. **MaxDistanceKm Semantics**: `GetNearbyLaundriesInput.MaxDistanceKm` limits the maximum physical distance from the customer to the laundry (`Laundry.Latitude`, `Laundry.Longitude`). The coverage area center is strictly for delivery coverage eligibility (`coverageDistanceKm <= DeliveryRadiusKm`) and is NOT used for `MaxDistanceKm` filtering.
+
+
