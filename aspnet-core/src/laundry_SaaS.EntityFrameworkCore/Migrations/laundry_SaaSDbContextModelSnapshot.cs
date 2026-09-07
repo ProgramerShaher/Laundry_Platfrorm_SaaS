@@ -3665,9 +3665,7 @@ namespace laundry_SaaS.Migrations
 
                             b1.ToTable("AbpUserPasskeys");
 
-                            b1
-                                .ToJson("Data")
-                                .HasColumnType("nvarchar(max)");
+                            b1.ToJson("Data");
 
                             b1.WithOwner()
                                 .HasForeignKey("IdentityUserPasskeyCredentialId");
