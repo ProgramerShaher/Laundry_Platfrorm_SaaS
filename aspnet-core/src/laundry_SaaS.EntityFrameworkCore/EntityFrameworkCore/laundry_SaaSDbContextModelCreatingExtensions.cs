@@ -42,6 +42,8 @@ public static class laundry_SaaSDbContextModelCreatingExtensions
         builder.Ignore<AddressSnapshot>();
         builder.Ignore<CashCollectionInfo>();
         builder.Ignore<ComplaintResolutionInfo>();
+        builder.Ignore<DeliveryVerificationInfo>();
+        builder.Ignore<PickupScheduleSnapshot>();
 
         var tablePrefix = laundry_SaaSConsts.DbTablePrefix;
         var schema = laundry_SaaSConsts.DbSchema;
@@ -199,6 +201,16 @@ public static class laundry_SaaSDbContextModelCreatingExtensions
                 a.Property(p => p.Notes).HasMaxLength(500);
             });
 
+            b.OwnsOne(x => x.PickupSchedule, ps =>
+            {
+                ps.Property(p => p.ScheduledDate).IsRequired();
+                ps.Property(p => p.StartTime).IsRequired();
+                ps.Property(p => p.EndTime).IsRequired();
+                ps.Property(p => p.OriginalSlotId).IsRequired();
+            });
+
+            b.Navigation(x => x.PickupSchedule).IsRequired();
+
             b.ConfigureByConvention();
 
             b.Property(x => x.OrderNumber).IsRequired().HasMaxLength(50);
@@ -307,6 +319,12 @@ public static class laundry_SaaSDbContextModelCreatingExtensions
                 c.Property(p => p.FailureReason).HasMaxLength(500);
             });
 
+            b.OwnsOne(x => x.VerificationInfo, v =>
+            {
+                v.Property(p => p.OtpHash).HasMaxLength(256);
+                v.Property(p => p.MaxAttempts).HasDefaultValue(DeliveryVerificationInfo.DefaultMaxAttempts);
+            });
+
             b.ConfigureByConvention();
 
             b.Property(x => x.FailureReason).HasMaxLength(500);
@@ -369,6 +387,7 @@ public static class laundry_SaaSDbContextModelCreatingExtensions
             b.Property(x => x.Notes).HasMaxLength(500);
 
             b.HasIndex(x => x.InspectionId);
+            b.HasIndex(x => x.OrderItemId);
         });
 
         // 22. Damage

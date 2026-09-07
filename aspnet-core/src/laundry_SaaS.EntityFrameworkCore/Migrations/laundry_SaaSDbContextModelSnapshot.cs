@@ -2640,6 +2640,12 @@ namespace laundry_SaaS.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("ActualLaundryItemTypeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ActualLaundryServiceId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int>("ActualQuantity")
                         .HasColumnType("int");
 
@@ -2650,6 +2656,12 @@ namespace laundry_SaaS.Migrations
                     b.Property<Guid?>("CreatorId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("CreatorId");
+
+                    b.Property<Guid?>("ExpectedLaundryItemTypeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ExpectedLaundryServiceId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("ExpectedQuantity")
                         .HasColumnType("int");
@@ -2669,12 +2681,14 @@ namespace laundry_SaaS.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<Guid>("OrderItemId")
+                    b.Property<Guid?>("OrderItemId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("InspectionId");
+
+                    b.HasIndex("OrderItemId");
 
                     b.ToTable("AppInspectionItems", (string)null);
                 });
@@ -3962,10 +3976,38 @@ namespace laundry_SaaS.Migrations
                                 .HasForeignKey("OrderId");
                         });
 
+                    b.OwnsOne("laundry_SaaS.Orders.PickupScheduleSnapshot", "PickupSchedule", b1 =>
+                        {
+                            b1.Property<Guid>("OrderId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<TimeOnly>("EndTime")
+                                .HasColumnType("time");
+
+                            b1.Property<Guid>("OriginalSlotId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<DateOnly>("ScheduledDate")
+                                .HasColumnType("date");
+
+                            b1.Property<TimeOnly>("StartTime")
+                                .HasColumnType("time");
+
+                            b1.HasKey("OrderId");
+
+                            b1.ToTable("AppOrders");
+
+                            b1.WithOwner()
+                                .HasForeignKey("OrderId");
+                        });
+
                     b.Navigation("DeliveryAddress")
                         .IsRequired();
 
                     b.Navigation("PickupAddress")
+                        .IsRequired();
+
+                    b.Navigation("PickupSchedule")
                         .IsRequired();
                 });
 
@@ -4041,7 +4083,50 @@ namespace laundry_SaaS.Migrations
                                 .HasForeignKey("DeliveryTaskId");
                         });
 
+                    b.OwnsOne("laundry_SaaS.PickupDelivery.DeliveryVerificationInfo", "VerificationInfo", b1 =>
+                        {
+                            b1.Property<Guid>("DeliveryTaskId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<DateTime?>("ExpiresAt")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<int>("FailedAttempts")
+                                .HasColumnType("int");
+
+                            b1.Property<int>("GenerationCount")
+                                .HasColumnType("int");
+
+                            b1.Property<bool>("IsVerified")
+                                .HasColumnType("bit");
+
+                            b1.Property<DateTime?>("LastSentAt")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<int>("MaxAttempts")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int")
+                                .HasDefaultValue(3);
+
+                            b1.Property<string>("OtpHash")
+                                .HasMaxLength(256)
+                                .HasColumnType("nvarchar(256)");
+
+                            b1.Property<DateTime?>("VerifiedAt")
+                                .HasColumnType("datetime2");
+
+                            b1.HasKey("DeliveryTaskId");
+
+                            b1.ToTable("AppDeliveryTasks");
+
+                            b1.WithOwner()
+                                .HasForeignKey("DeliveryTaskId");
+                        });
+
                     b.Navigation("CashCollectionInfo")
+                        .IsRequired();
+
+                    b.Navigation("VerificationInfo")
                         .IsRequired();
                 });
 

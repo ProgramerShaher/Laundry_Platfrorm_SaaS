@@ -337,4 +337,106 @@ public class Laundry : TenantFullAuditedAggregateRoot
         TimeSlots.Add(slot);
         return slot;
     }
+
+    /// <summary>
+    /// يتحقق من صحة وصلاحية فترة استلام محددة لطلب ما بناءً على حالة المغسلة وساعات عمل اليوم وتاريخ الاستلام المطلوب،
+    /// ويرجع كائن الفترة الزمنية المعتمدة لتمكين طبقة التطبيق من إنشاء اللقطة التاريخية (<see cref="laundry_SaaS.Orders.PickupScheduleSnapshot"/>).
+    /// </summary>
+    /// <param name="slotId">المعرّف الفريد للفترة الزمنية المطلوبة.</param>
+    /// <param name="pickupDate">تاريخ الاستلام التقويمي المطلوب.</param>
+    /// <param name="currentDateTime">التوقيت واللحظة الزمنية الحالية المعتمدة (عبر IClock أو التوقيت الموثوق).</param>
+    /// <returns>كيان الفترة الزمنية المعتمد بعد اجتياز كافة قيود التحقق.</returns>
+    /// <exception cref="BusinessException">يتم رميها إذا كانت المغسلة غير نشطة، أو لا تستقبل طلبات، أو كانت الفترة غير صالحة أو غير نشطة أو لا تطابق اليوم أو منتهية.</exception>
+    public LaundryTimeSlot ValidateAndGetPickupSlot(
+        Guid slotId,
+        DateOnly pickupDate,
+        DateTime currentDateTime)
+    {
+        if (slotId == Guid.Empty)
+        {
+            throw new BusinessException(
+                laundry_SaaSDomainErrorCodes.LaundryErrorCodes.InvalidPickupSlot,
+                "SlotId must not be empty.");
+        }
+
+        if (!IsActive)
+        {
+            throw new BusinessException(
+                laundry_SaaSDomainErrorCodes.LaundryErrorCodes.LaundryClosedOrInactive,
+                "Laundry is currently inactive.");
+        }
+
+        if (!AcceptingOrders)
+        {
+            throw new BusinessException(
+                laundry_SaaSDomainErrorCodes.LaundryErrorCodes.LaundryNotAcceptingOrders,
+                "Laundry is not accepting new orders at this time.");
+        }
+
+        var slot = TimeSlots.FirstOrDefault(s => s.Id == slotId);
+        if (slot == null)
+        {
+            throw new BusinessException(
+                laundry_SaaSDomainErrorCodes.LaundryErrorCodes.InvalidPickupSlot,
+                $"Pickup slot with id '{slotId}' does not exist in this laundry.");
+        }
+
+        if (slot.SlotType != SlotType.Pickup)
+        {
+            throw new BusinessException(
+                laundry_SaaSDomainErrorCodes.LaundryErrorCodes.InvalidPickupSlot,
+                $"Time slot '{slotId}' is configured as '{slot.SlotType}', but must be 'Pickup'.");
+        }
+
+        if (!slot.IsActive)
+        {
+            throw new BusinessException(
+                laundry_SaaSDomainErrorCodes.LaundryErrorCodes.PickupSlotNotActive,
+                $"Pickup slot '{slotId}' is not active.");
+        }
+
+        if (pickupDate.DayOfWeek != slot.DayOfWeek)
+        {
+            throw new BusinessException(
+                laundry_SaaSDomainErrorCodes.LaundryErrorCodes.PickupSlotDateMismatch,
+                $"Pickup date '{pickupDate}' falls on {pickupDate.DayOfWeek}, which does not match the slot's scheduled day {slot.DayOfWeek}.");
+        }
+
+        var currentDate = DateOnly.FromDateTime(currentDateTime);
+        if (pickupDate < currentDate)
+        {
+            throw new BusinessException(
+                laundry_SaaSDomainErrorCodes.LaundryErrorCodes.PickupDateInPast,
+                $"Pickup date '{pickupDate}' is in the past. Current date is '{currentDate}'.");
+        }
+
+        var workingHour = WorkingHours.FirstOrDefault(w => w.DayOfWeek == pickupDate.DayOfWeek);
+        if (workingHour == null || !workingHour.IsOpen)
+        {
+            throw new BusinessException(
+                laundry_SaaSDomainErrorCodes.LaundryErrorCodes.LaundryClosedOrInactive,
+                $"Laundry is closed or has no operating hours on {pickupDate.DayOfWeek}.");
+        }
+
+        if (slot.StartTime < workingHour.OpenTime!.Value || slot.EndTime > workingHour.CloseTime!.Value)
+        {
+            throw new BusinessException(
+                laundry_SaaSDomainErrorCodes.LaundryErrorCodes.InvalidPickupSlot,
+                $"Time slot [{slot.StartTime}-{slot.EndTime}] falls outside the operating hours [{workingHour.OpenTime!.Value}-{workingHour.CloseTime!.Value}] on {pickupDate.DayOfWeek}.");
+        }
+
+        // Same-day check: Cannot select a slot that has already ended
+        if (pickupDate == currentDate)
+        {
+            var currentTime = TimeOnly.FromDateTime(currentDateTime);
+            if (currentTime >= slot.EndTime)
+            {
+                throw new BusinessException(
+                    laundry_SaaSDomainErrorCodes.LaundryErrorCodes.PickupSlotExpired,
+                    $"Cannot select pickup slot [{slot.StartTime}-{slot.EndTime}] because it has already ended for today. Current time is '{currentTime}'.");
+            }
+        }
+
+        return slot;
+    }
 }

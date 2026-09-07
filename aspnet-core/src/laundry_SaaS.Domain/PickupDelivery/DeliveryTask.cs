@@ -91,6 +91,11 @@ public class DeliveryTask : TenantAuditedAggregateRoot
     public CashCollectionInfo CashCollectionInfo { get; private set; } = null!;
 
     /// <summary>
+    /// كائن القيمة المدمج (Value Object) الذي يوثق ويدير حالة رمز التحقق المؤقت (OTP) لتسليم الطلب.
+    /// </summary>
+    public DeliveryVerificationInfo VerificationInfo { get; private set; } = null!;
+
+    /// <summary>
     /// مُنشئ محمي خالي من المعاملات مخصص لـ Entity Framework Core.
     /// </summary>
     private DeliveryTask()
@@ -138,6 +143,7 @@ public class DeliveryTask : TenantAuditedAggregateRoot
         Status = DeliveryTaskStatus.Assigned;
         AssignedAt = driverId.HasValue ? DateTime.UtcNow : null;
         CashCollectionInfo = new CashCollectionInfo(cashAmountToCollect);
+        VerificationInfo = new DeliveryVerificationInfo();
     }
 
     /// <summary>
@@ -245,15 +251,78 @@ public class DeliveryTask : TenantAuditedAggregateRoot
     }
 
     /// <summary>
-    /// يؤكد إتمام تسليم الملابس للعميل بنجاح بعد وصول السائق والتحقق الصارم من استيفاء التحصيل النقدي (COD).
+    /// يسجل رمز تحقق مشفر جديد لمهمة التوصيل الحالية.
+    /// يُشترط حصراً أن يكون السائق قد وصل إلى موقع العميل (Status == Arrived).
+    /// </summary>
+    /// <param name="otpHash">القيمة المشفرة للرمز الجديد (تعتبر قيمة مبهمة للنطاق).</param>
+    /// <param name="generatedAt">تاريخ ووقت التوليد.</param>
+    /// <param name="expiresAt">تاريخ ووقت انتهاء الصلاحية.</param>
+    /// <exception cref="BusinessException">يتم رميها إذا لم تكن حالة المهمة Arrived.</exception>
+    public void SetDeliveryOtp(string otpHash, DateTime generatedAt, DateTime expiresAt)
+    {
+        if (Status != DeliveryTaskStatus.Arrived)
+        {
+            throw new BusinessException(
+                laundry_SaaSDomainErrorCodes.DeliveryTaskErrorCodes.InvalidStatusForOtp,
+                $"Delivery OTP can only be generated when driver is in Arrived status. Current status: '{Status}'.");
+        }
+
+        VerificationInfo.SetNewOtp(otpHash, generatedAt, expiresAt);
+    }
+
+    /// <summary>
+    /// يسجل محاولة تحقق فاشلة لرمز التسليم ويزيد العداد بمقدار واحد.
+    /// يُشترط حصراً أن تكون المهمة في حالة وصول السائق (Status == Arrived).
+    /// </summary>
+    /// <exception cref="BusinessException">يتم رميها إذا لم تكن حالة المهمة Arrived.</exception>
+    public void RecordFailedOtpAttempt()
+    {
+        if (Status != DeliveryTaskStatus.Arrived)
+        {
+            throw new BusinessException(
+                laundry_SaaSDomainErrorCodes.DeliveryTaskErrorCodes.InvalidStatusForOtp,
+                $"Failed OTP attempt can only be recorded when task is in Arrived status. Current status: '{Status}'.");
+        }
+
+        VerificationInfo.RecordFailedAttempt();
+    }
+
+    /// <summary>
+    /// يعتمد نجاح التحقق من رمز التسليم للمهمة الحالية بعد مطابقة الرمز في طبقة التطبيق.
+    /// يُشترط حصراً أن تكون المهمة في حالة وصول السائق (Status == Arrived).
+    /// </summary>
+    /// <param name="verifiedAt">تاريخ ووقت التحقق.</param>
+    /// <param name="currentDateTime">الوقت الحالي المعتمد للتحقق من عدم انتهاء الصلاحية.</param>
+    /// <exception cref="BusinessException">يتم رميها إذا لم تكن حالة المهمة Arrived أو كانت بيانات الرمز غير صالحة.</exception>
+    public void MarkDeliveryOtpAsVerified(DateTime verifiedAt, DateTime currentDateTime)
+    {
+        if (Status != DeliveryTaskStatus.Arrived)
+        {
+            throw new BusinessException(
+                laundry_SaaSDomainErrorCodes.DeliveryTaskErrorCodes.InvalidStatusForOtp,
+                $"Delivery OTP can only be marked as verified when task is in Arrived status. Current status: '{Status}'.");
+        }
+
+        VerificationInfo.MarkAsVerified(verifiedAt, currentDateTime);
+    }
+
+    /// <summary>
+    /// يؤكد إتمام تسليم الملابس للعميل بنجاح بعد وصول السائق والتحقق الصارم من استيفاء التحصيل النقدي (COD) والتحقق من رمز التسليم (OTP).
     /// </summary>
     /// <param name="deliveredAt">تاريخ ووقت التسليم النهائي.</param>
-    /// <exception cref="BusinessException">يتم رميها إذا لم يكن السائق في حالة Arrived أو لم يستوفِ التحصيل النقدي كاملاً.</exception>
+    /// <exception cref="BusinessException">يتم رميها إذا لم يكن السائق في حالة Arrived أو لم يتم التحقق من الرمز أو لم يستوفِ التحصيل النقدي كاملاً.</exception>
     public void ConfirmDelivery(DateTime deliveredAt)
     {
         if (Status != DeliveryTaskStatus.Arrived)
         {
             throw new BusinessException("Task must be in Arrived status before confirming delivery.");
+        }
+
+        if (!VerificationInfo.IsVerified)
+        {
+            throw new BusinessException(
+                laundry_SaaSDomainErrorCodes.DeliveryTaskErrorCodes.DeliveryOtpNotVerified,
+                "Cannot confirm delivery without successful OTP verification.");
         }
 
         if (!CashCollectionInfo.IsCollected || CashCollectionInfo.CollectedAmount != CashCollectionInfo.AmountToCollect)

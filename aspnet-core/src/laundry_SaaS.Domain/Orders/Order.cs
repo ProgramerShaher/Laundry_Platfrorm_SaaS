@@ -59,7 +59,14 @@ public class Order : TenantAuditedAggregateRoot
     public AddressSnapshot DeliveryAddress { get; private set; } = null!;
 
     /// <summary>
-    /// معرّف الفترة الزمنية المجدولة لاستلام الملابس من العميل إن وُجدت.
+    /// لقطة تاريخية ثابتة وغير قابلة للتعديل (PickupScheduleSnapshot) لموعد وفترة استلام ملابس الطلب من العميل.
+    /// تعد من موجهات الصحة الصارمة للطلب (Order Invariant)؛ فلا يوجد طلب مؤكد دون موعد استلام تاريخي معتمد.
+    /// تثبت أثناء إنشاء الطلب ولا تتغير بعد ذلك لحفظ التاريخ التشغيلي.
+    /// </summary>
+    public PickupScheduleSnapshot PickupSchedule { get; private set; } = null!;
+
+    /// <summary>
+    /// معرّف الفترة الزمنية المجدولة لاستلام الملابس من العميل إن وُجدت (للمرجعية التتبعية).
     /// </summary>
     public Guid? PickupSlotId { get; private set; }
 
@@ -136,7 +143,8 @@ public class Order : TenantAuditedAggregateRoot
     }
 
     /// <summary>
-    /// يُنشئ طلباً جديداً بحالة مسودة (Draft) مع تثبيت لقطات العناوين وتوثيق الحركة الأولى في السجل التاريخي.
+    /// يُنشئ طلباً جديداً بحالة مسودة (Draft) مع تثبيت لقطات العناوين وموعد الاستلام المعتمد وتوثيق الحركة الأولى في السجل التاريخي.
+    /// جدول الاستلام (PickupSchedule) إلزامي كجزء من موجهات صحة الطلب (Order Invariant) ولا يمكن إنشاء طلب بدونه.
     /// </summary>
     /// <param name="id">المعرّف الفريد للطلب.</param>
     /// <param name="tenantId">معرّف المستأجر المالك.</param>
@@ -145,12 +153,12 @@ public class Order : TenantAuditedAggregateRoot
     /// <param name="laundryId">معرّف المغسلة.</param>
     /// <param name="pickupAddress">لقطة عنوان الاستلام.</param>
     /// <param name="deliveryAddress">لقطة عنوان التوصيل.</param>
+    /// <param name="pickupSchedule">اللقطة التاريخية الإلزامية لموعد وفترة الاستلام المعتمد.</param>
     /// <param name="deliveryFee">رسوم التوصيل.</param>
     /// <param name="discount">قيمة الخصم.</param>
-    /// <param name="pickupSlotId">معرّف فترة الاستلام.</param>
-    /// <param name="deliverySlotId">معرّف فترة التوصيل.</param>
+    /// <param name="deliverySlotId">معرّف فترة التوصيل الاختياري.</param>
     /// <param name="customerNotes">ملاحظات العميل.</param>
-    /// <exception cref="BusinessException">يتم رميها إذا كانت المعرفات الأساسية فارغة.</exception>
+    /// <exception cref="BusinessException">يتم رميها إذا كانت المعرفات الأساسية فارغة أو كان موعد الاستلام غير محدد.</exception>
     public Order(
         Guid id,
         Guid tenantId,
@@ -159,9 +167,9 @@ public class Order : TenantAuditedAggregateRoot
         Guid laundryId,
         AddressSnapshot pickupAddress,
         AddressSnapshot deliveryAddress,
+        PickupScheduleSnapshot pickupSchedule,
         decimal deliveryFee = 0,
         decimal discount = 0,
-        Guid? pickupSlotId = null,
         Guid? deliverySlotId = null,
         string? customerNotes = null)
         : base(id, tenantId)
@@ -181,7 +189,11 @@ public class Order : TenantAuditedAggregateRoot
         LaundryId = laundryId;
         PickupAddress = Check.NotNull(pickupAddress, nameof(pickupAddress));
         DeliveryAddress = Check.NotNull(deliveryAddress, nameof(deliveryAddress));
-        PickupSlotId = pickupSlotId;
+        PickupSchedule = Check.NotNull(pickupSchedule, nameof(pickupSchedule));
+        PickupSlotId = pickupSchedule.OriginalSlotId;
+        CustomerNotes = customerNotes;
+        DeliverySlotId = deliverySlotId;
+
         if (deliveryFee < 0)
         {
             throw new BusinessException("DeliveryFee must not be negative.");

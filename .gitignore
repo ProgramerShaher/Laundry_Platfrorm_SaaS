@@ -19,3 +19,11 @@ node_modules/
 # Dotnet CLI
 .dotnet/
 .dotnet_home/
+
+# Test Results & Local Databases
+TestResults/
+**/TestResults/
+*.log
+*.sqlite
+*.db
+*.trx
